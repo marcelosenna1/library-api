@@ -51,10 +51,5 @@ public class BookServiceTest {
         assertEquals("Marcelo", savedBook.getAuthor());
         assertEquals("Para mim", savedBook.getTitle());
     }
-    @Test
-    @DisplayName("Deve lançar erro de validação quando não houver dados suficiente para criação do livro")
-    void createInvalidBookTest(){
-
-    }
 
 }
