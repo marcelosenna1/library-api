@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "com.sena.libraryapi.api.config")
+@ComponentScan(basePackages = "com.sena.libraryapi.*")
 public class LibraryApiApplication implements CommandLineRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibraryApiApplication.class);
