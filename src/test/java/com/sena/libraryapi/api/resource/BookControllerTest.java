@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -35,6 +37,9 @@ class BookControllerTest {
     @MockBean
     BookService bookService;
 
+    @MockBean
+    ModelMapper modelMapper;
+
     @Test
     @DisplayName("Deve criar um livro com sucesso!")
     void createdBookTest() throws Exception {
@@ -48,7 +53,7 @@ class BookControllerTest {
         Book entity = new Book().setId(dto.getId()).setAuthor(dto.getAuthor()).setTitle(dto.getTitle()).setIsbn(dto.getIsbn());
         String json = new ObjectMapper().writeValueAsString(dto);
 
-        BDDMockito.given(bookService.save(Mockito.any(Book.class))).willReturn(entity);
+        BDDMockito.given(bookService.save(any(Book.class))).willReturn(entity);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(BOOK_API)
