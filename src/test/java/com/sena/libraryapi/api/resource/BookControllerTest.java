@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sena.libraryapi.exception.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sena.libraryapi.api.dto.BookDTO;
+import com.sena.libraryapi.api.model.dto.BookDTO;
 import com.sena.libraryapi.api.model.Book;
 import com.sena.libraryapi.api.service.BookService;
 
@@ -39,11 +40,7 @@ class BookControllerTest {
     @DisplayName("Deve criar um livro com sucesso!")
     void createdBookTest() throws Exception {
 
-        BookDTO dto = new BookDTO()
-                .setId(1L)
-                .setTitle("Meu livro")
-                .setIsbn("123456")
-                .setAuthor("Marcelo Sena");
+        BookDTO dto = createNewBook();
 
         Book entity = new Book().setId(dto.getId()).setAuthor(dto.getAuthor()).setTitle(dto.getTitle()).setIsbn(dto.getIsbn());
         String json = new ObjectMapper().writeValueAsString(dto);
@@ -84,8 +81,36 @@ class BookControllerTest {
     }
 
     @Test
+    @DisplayName("Deve lançar erro ao tentar cadastrar um livro com isbn já utilizado por outro.")
+    void createBookWithDuplicateIsbn() throws Exception {
+
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+        String mensagemErro = "Isbn já cadastrado.";
+        given(bookService.save(any(Book.class))).willThrow( new BusinessException(mensagemErro));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(BOOK_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errors", hasSize(1)))
+                .andExpect(jsonPath("errors[0]").value(mensagemErro));
+    }
+
+    @Test
     @DisplayName("Deve deletar um livro com sucesso!")
     void deletedBookTest(){
 
+    }
+
+    private static BookDTO createNewBook() {
+        return new BookDTO()
+                .setId(1L)
+                .setTitle("Meu livro")
+                .setIsbn("123")
+                .setAuthor("Marcelo Sena");
     }
 }

@@ -4,6 +4,8 @@ import com.sena.libraryapi.api.model.Book;
 import com.sena.libraryapi.api.model.repository.BookRepository;
 import com.sena.libraryapi.api.service.BookService;
 import com.sena.libraryapi.api.service.impl.BookServiceImpl;
+import com.sena.libraryapi.exception.BusinessException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -26,21 +28,16 @@ public class BookServiceTest {
 
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         this.service = new BookServiceImpl(repository);
     }
 
 
     @Test
     @DisplayName("Deve salvar um livro")
-    void saveBookTest(){
+    void saveBookTest() {
 
-        Book book = Book.builder()
-                .id(1L)
-                .isbn("123")
-                .author("Marcelo")
-                .title("Para mim")
-                .build();
+        Book book = createValidBook();
 
         when(repository.save(book)).thenReturn(book);
 
@@ -50,6 +47,30 @@ public class BookServiceTest {
         assertEquals("123", savedBook.getIsbn());
         assertEquals("Marcelo", savedBook.getAuthor());
         assertEquals("Para mim", savedBook.getTitle());
+    }
+
+    @Test
+    @DisplayName("Deve lançar erro de negócio ao tentar salvar um livro com isbn duplicado")
+    void shouldNotSaveABookWithDuplicatedISBN() {
+
+        Book book = createValidBook();
+        when(repository.existsByIsbn(anyString())).thenReturn(true);
+
+        Throwable exception = Assertions.catchException(() -> service.save(book));
+
+        assertThat(exception)
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Isbn já cadastrado.");
+        verify(repository, never()).save(book);
+    }
+
+    private static Book createValidBook() {
+        return Book.builder()
+                .id(1L)
+                .isbn("123")
+                .author("Marcelo")
+                .title("Para mim")
+                .build();
     }
 
 }
