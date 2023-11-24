@@ -6,10 +6,12 @@ import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BookServiceImpl implements BookService {
 
-    private BookRepository repository;
+    private final BookRepository repository;
 
     public BookServiceImpl(BookRepository repository) {
         this.repository = repository;
@@ -21,5 +23,15 @@ public class BookServiceImpl implements BookService {
             throw new BusinessException("Isbn já cadastrado.");
         }
         return repository.save(book);
+    }
+
+    @Override
+    public Optional<Book> getById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void delete(Book book) {
+
     }
 }
