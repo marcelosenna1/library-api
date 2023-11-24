@@ -1,8 +1,8 @@
-package com.sena.libraryapi.api.service.impl;
+package com.sena.libraryapi.service.impl;
 
-import com.sena.libraryapi.api.model.Book;
-import com.sena.libraryapi.api.model.repository.BookRepository;
-import com.sena.libraryapi.api.service.BookService;
+import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.model.repository.BookRepository;
+import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.exception.BusinessException;
 import org.springframework.stereotype.Service;
 

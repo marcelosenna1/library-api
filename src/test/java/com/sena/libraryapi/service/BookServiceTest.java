@@ -1,9 +1,8 @@
 package com.sena.libraryapi.service;
 
-import com.sena.libraryapi.api.model.Book;
-import com.sena.libraryapi.api.model.repository.BookRepository;
-import com.sena.libraryapi.api.service.BookService;
-import com.sena.libraryapi.api.service.impl.BookServiceImpl;
+import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.model.repository.BookRepository;
+import com.sena.libraryapi.service.impl.BookServiceImpl;
 import com.sena.libraryapi.exception.BusinessException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

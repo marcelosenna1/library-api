@@ -1,9 +1,9 @@
 package com.sena.libraryapi.api.resource;
 
-import com.sena.libraryapi.api.model.dto.BookDTO;
+import com.sena.libraryapi.api.dto.BookDTO;
 import com.sena.libraryapi.api.exception.ApiErrors;
-import com.sena.libraryapi.api.model.Book;
-import com.sena.libraryapi.api.service.BookService;
+import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.exception.BusinessException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

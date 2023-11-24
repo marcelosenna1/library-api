@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sena.libraryapi.api.model.dto.BookDTO;
-import com.sena.libraryapi.api.model.Book;
-import com.sena.libraryapi.api.service.BookService;
+import com.sena.libraryapi.api.dto.BookDTO;
+import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.service.BookService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest (BookController.class)

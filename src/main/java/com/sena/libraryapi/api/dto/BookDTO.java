@@ -1,4 +1,4 @@
-package com.sena.libraryapi.api.model.dto;
+package com.sena.libraryapi.api.dto;
 
 
 import lombok.Data;
