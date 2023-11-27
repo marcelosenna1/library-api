@@ -1,4 +1,4 @@
-package com.sena.libraryapi.api.config;
+package com.sena.libraryapi.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
