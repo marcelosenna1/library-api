@@ -4,6 +4,10 @@ import com.sena.libraryapi.model.entity.Book;
 import com.sena.libraryapi.model.repository.BookRepository;
 import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.exception.BusinessException;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,7 +31,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> getById(Long id) {
-        if(id != null) {
+        if (id != null) {
             if (repository.findById(id).isPresent()) {
                 return repository.findById(id);
             } else {
@@ -49,6 +53,17 @@ public class BookServiceImpl implements BookService {
         Optional<Book> foundBook = getById(validaId(book));
         foundBook.ifPresent(repository::save);
         return book;
+    }
+
+    @Override
+    public Page<Book> find(Book filter, Pageable pageRequest) {
+        Example<Book> example = Example.of(filter,
+                ExampleMatcher
+                        .matching()
+                        .withIgnoreCase()
+                        .withIgnoreNullValues()
+                        .withStringMatcher(ExampleMatcher.StringMatcher.STARTING));
+        return repository.findAll(example, pageRequest);
     }
 
     private static Long validaId(Book book) {
