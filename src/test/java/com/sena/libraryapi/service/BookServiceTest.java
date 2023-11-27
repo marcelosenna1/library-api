@@ -10,9 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,6 +120,7 @@ public class BookServiceTest {
 
         verify(repository, never()).delete(book);
     }
+
     @Test
     @DisplayName("Deve atualizar um livro existente")
     void UpdateBookTest() {
@@ -131,6 +138,7 @@ public class BookServiceTest {
         assertNotNull(updated.getIsbn());
         assertNotNull(updated.getAuthor());
     }
+
     @Test
     @DisplayName("Deve mostrar erro ao tentar atualizar um livro inexistente")
     void updateInvalidBookTest() {
@@ -139,6 +147,26 @@ public class BookServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.update(book));
 
         verify(repository, never()).save(book);
+    }
+
+    @Test
+    @DisplayName("Deve filtrar livros pelas propriedades")
+    void findBookTest() {
+        Book book = createValidBook();
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Book> list = Arrays.asList(book);
+        Page<Book> page = new PageImpl<>(list, pageRequest, 1);
+        when(repository.findAll(any(Example.class), any(PageRequest.class)))
+                .thenReturn(page);
+
+        Page<Book> result = service.find(book, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(list, result.getContent());
+        assertEquals(0, result.getPageable().getPageNumber());
+        assertEquals(10, result.getPageable().getPageSize());
+
     }
 
 
