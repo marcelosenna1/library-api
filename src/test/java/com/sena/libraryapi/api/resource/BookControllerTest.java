@@ -178,6 +178,51 @@ class BookControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Deve atualizar um livro")
+    void updateBookTest() throws Exception{
+        Long id = 1L;
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+        Book updatingBook = Book.builder().id(1L).isbn("1230").author("Zeus").title("Aventuras").build();
+
+        given(bookService.getById(id)).willReturn(Optional.of(updatingBook));
+        given(bookService.update(updatingBook)).willReturn(Book.builder().id(1L).title("Meu livro")
+                .isbn("123")
+                .author("Marcelo Sena").build());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(id))
+                .andExpect(jsonPath("title").value(createNewBook().getTitle()))
+                .andExpect(jsonPath("author").value(createNewBook().getAuthor()))
+                .andExpect(jsonPath("isbn").value("123"));
+
+    }
+    @Test
+    @DisplayName("Deve retornar 404 ao tentar atualizar um livro inexistente")
+    void updateInexistBookTest() throws Exception{
+
+        Long id = 1L;
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+
+        given(bookService.getById(anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/" + 1))
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isNotFound());
+
+    }
     private static BookDTO createNewBook() {
         return new BookDTO()
                 .setId(1L)

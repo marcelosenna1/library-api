@@ -13,8 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -62,6 +64,83 @@ public class BookServiceTest {
                 .hasMessage("Isbn já cadastrado.");
         verify(repository, never()).save(book);
     }
+
+
+    @Test
+    @DisplayName("Deve obter um livro por Id")
+    void getBookByIdTest() {
+        Long id = 1L;
+        Book book = createValidBook();
+        book.setId(id);
+        when(repository.findById(id)).thenReturn(Optional.of(book));
+
+        Optional<Book> foundBook = service.getById(id);
+
+        assertThat(foundBook.isPresent()).isTrue();
+        assertThat(foundBook.get().getId()).isEqualTo(id);
+        assertThat(foundBook.get().getAuthor()).isEqualTo(book.getAuthor());
+        assertThat(foundBook.get().getIsbn()).isEqualTo(book.getIsbn());
+        assertThat(foundBook.get().getTitle()).isEqualTo(book.getTitle());
+    }
+
+    @Test
+    @DisplayName("Deve retornar vazio caso tente obter um livro por Id e ele não exista")
+    void BookNotFoundByIdTest() {
+        Book book = new Book();
+
+        assertThrows(IllegalArgumentException.class, () -> service.getById(book.getId()));
+
+        verify(repository, never()).findById(book.getId());
+    }
+
+    @Test
+    @DisplayName("Deve deletar um livro existente")
+    void deleteBookTest() {
+        Book book = createValidBook();
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(book));
+
+        service.delete(book);
+
+        verify(repository, times(1)).delete(book);
+    }
+
+    @Test
+    @DisplayName("Deve mostrar erro ao tentar deletar um livro inexistente")
+    void deleteInvalidBookTest() {
+        Book book = new Book();
+
+        assertThrows(IllegalArgumentException.class, () -> service.delete(book));
+
+        verify(repository, never()).delete(book);
+    }
+    @Test
+    @DisplayName("Deve atualizar um livro existente")
+    void UpdateBookTest() {
+        Book book = createValidBook();
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(book));
+
+        Book updated = service.update(book);
+
+        verify(repository, times(1)).save(book);
+
+        assertNotNull(updated);
+        assertNotNull(updated.getId());
+        assertNotNull(updated.getTitle());
+        assertNotNull(updated.getIsbn());
+        assertNotNull(updated.getAuthor());
+    }
+    @Test
+    @DisplayName("Deve mostrar erro ao tentar atualizar um livro inexistente")
+    void updateInvalidBookTest() {
+        Book book = new Book();
+
+        assertThrows(IllegalArgumentException.class, () -> service.update(book));
+
+        verify(repository, never()).save(book);
+    }
+
 
     private static Book createValidBook() {
         return Book.builder()
