@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(BookController.class)
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 class BookControllerTest {
 

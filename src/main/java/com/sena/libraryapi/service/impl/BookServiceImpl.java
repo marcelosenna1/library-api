@@ -66,6 +66,11 @@ public class BookServiceImpl implements BookService {
         return repository.findAll(example, pageRequest);
     }
 
+    @Override
+    public Optional<Book> getBookByIsbn(String isbn) {
+        return Optional.empty();
+    }
+
     private static Long validaId(Book book) {
         if (book == null || book.getId() == null) {
             throw new IllegalArgumentException("O Id não pode ser nulo");
