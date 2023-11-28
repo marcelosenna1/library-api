@@ -1,6 +1,5 @@
 package com.sena.libraryapi.api.resource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sena.libraryapi.api.dto.LoanDTO;
 import com.sena.libraryapi.model.entity.Book;
@@ -20,15 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.swing.text.html.Option;
-
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = LoanController.class)
@@ -63,7 +59,7 @@ public class LoanControllerTest {
 
         mvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(1L));
+                .andExpect(content().string("1"));
 
     }
 
