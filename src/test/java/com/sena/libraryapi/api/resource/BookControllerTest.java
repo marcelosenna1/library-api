@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.sena.libraryapi.exception.BusinessException;
+import com.sena.libraryapi.service.LoanService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(BookController.class)
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 class BookControllerTest {
 
@@ -41,7 +42,10 @@ class BookControllerTest {
     @Autowired
     MockMvc mvc;
     @MockBean
-    BookService service;
+    private BookService service;
+
+    @MockBean
+    private LoanService loanService;
 
     @Test
     @DisplayName("Deve criar um livro com sucesso!")

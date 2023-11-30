@@ -1,12 +1,14 @@
 package com.sena.libraryapi.model.repository;
 
 import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.service.LoanService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,6 +28,9 @@ public class BookRepositoryTest {
 
     @Autowired
     BookRepository repository;
+
+    @MockBean
+    private LoanService loanService;
 
     @Test
     @DisplayName("Deve retornar verdadeiro quando existir um livro na base com o isbn informado")
