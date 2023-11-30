@@ -3,6 +3,7 @@ package com.sena.libraryapi.api.exception;
 import com.sena.libraryapi.exception.BusinessException;
 import lombok.Getter;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,5 +20,9 @@ public class ApiErrors {
 
     public ApiErrors(BusinessException ex) {
         this.errors = Arrays.asList(ex.getMessage());
+    }
+
+    public ApiErrors(ResponseStatusException ex) {
+        this.errors = Arrays.asList(ex.getReason());
     }
 }
