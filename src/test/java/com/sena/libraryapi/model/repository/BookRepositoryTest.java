@@ -1,7 +1,9 @@
 package com.sena.libraryapi.model.repository;
 
 import com.sena.libraryapi.model.entity.Book;
+import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.service.LoanService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +33,7 @@ public class BookRepositoryTest {
 
     @MockBean
     private LoanService loanService;
+
 
     @Test
     @DisplayName("Deve retornar verdadeiro quando existir um livro na base com o isbn informado")
