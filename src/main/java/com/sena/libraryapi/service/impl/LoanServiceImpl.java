@@ -1,5 +1,6 @@
 package com.sena.libraryapi.service.impl;
 
+import com.sena.libraryapi.exception.BusinessException;
 import com.sena.libraryapi.model.entity.Loan;
 import com.sena.libraryapi.model.repository.LoanRepository;
 import com.sena.libraryapi.service.LoanService;
@@ -14,6 +15,9 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Loan save(Loan loan) {
+        if(repository.existsByBookAndNotReturned(loan.getBook())){
+            throw new BusinessException("Book already loaned");
+        }
         return repository.save(loan);
     }
 }
