@@ -2,12 +2,14 @@ package com.sena.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sena.libraryapi.api.dto.LoanDTO;
+import com.sena.libraryapi.api.dto.LoanFilterDTO;
 import com.sena.libraryapi.api.dto.ReturnedLoanDTO;
 import com.sena.libraryapi.exception.BusinessException;
 import com.sena.libraryapi.model.entity.Book;
 import com.sena.libraryapi.model.entity.Loan;
 import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.service.LoanService;
+import com.sena.libraryapi.service.LoanServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -56,7 +62,7 @@ public class LoanControllerTest {
         Book book = Book.builder().id(1L).isbn("123").build();
         given(bookService.getBookByIsbn("123")).willReturn(Optional.of(book));
 
-        Loan loan = Loan.builder().id(1L).costumer("Sena").book(book).loanDate(LocalDate.now()).build();
+        Loan loan = Loan.builder().id(1L).customer("Sena").book(book).loanDate(LocalDate.now()).build();
         given(loanService.save(any(Loan.class))).willReturn(loan);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(LOAN_API)
@@ -127,12 +133,13 @@ public class LoanControllerTest {
 
         mvc.perform(
                 patch(LOAN_API.concat("/1"))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isOk());
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)).andExpect(status().isOk());
 
         verify(loanService, times(1)).update(loan);
     }
+
     @Test
     @DisplayName("Deve retornar um erro 404 quando tentar devolver um livro inexistente")
     void returnInexistentBookTest() throws Exception {
@@ -144,9 +151,42 @@ public class LoanControllerTest {
 
         mvc.perform(
                 patch(LOAN_API.concat("/1"))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)).andExpect(status().isNotFound());
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)).andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    @DisplayName("Deve filtrar empréstimos")
+    void findBookTest() throws Exception {
+
+        Long id = 1L;
+
+        Loan loan = LoanServiceTest.createLoan();
+        loan.setId(id);
+        Book book = Book.builder().id(id).isbn("321").build();
+        loan.setBook(book);
+
+        given(loanService.find(any(LoanFilterDTO.class), any(Pageable.class)))
+                .willReturn(new PageImpl<Loan>(Arrays.asList(loan), PageRequest.of(0,100), 1));
+
+        String queryString = String.format("?isbn=%s&customer=%s&page=0&size=100",
+                book.getIsbn(),
+                loan.getCustomer());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(LOAN_API.concat(queryString))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc
+                .perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("content", hasSize(1)))
+                .andExpect(jsonPath("totalElements").value(1))
+                .andExpect(jsonPath("pageable.pageSize").value(100))
+                .andExpect(jsonPath("pageable.pageNumber").value(0));
+
 
     }
 

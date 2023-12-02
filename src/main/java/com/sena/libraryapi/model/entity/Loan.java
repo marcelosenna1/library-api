@@ -20,7 +20,7 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 100)
-    private String costumer;
+    private String customer;
     @JoinColumn(name = "id_book")
     @ManyToOne
     private Book book;

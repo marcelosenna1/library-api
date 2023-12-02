@@ -1,5 +1,6 @@
 package com.sena.libraryapi.service;
 
+import com.sena.libraryapi.api.dto.LoanFilterDTO;
 import com.sena.libraryapi.exception.BusinessException;
 import com.sena.libraryapi.model.entity.Book;
 import com.sena.libraryapi.model.entity.Loan;
@@ -10,10 +11,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,17 +45,17 @@ public class LoanServiceTest {
     @DisplayName("Deve salvar um empréstimo")
     void saveLoanTest() {
         Book book = Book.builder().id(1L).build();
-        String costumer = "Sena";
+        String customer = "Sena";
         Loan savingLoan = Loan.builder()
                 .book(book)
-                .costumer(costumer)
+                .customer(customer)
                 .loanDate(LocalDate.now())
                 .build();
 
         Loan savedLoan = Loan.builder()
                 .id(savingLoan.getId())
                 .loanDate(LocalDate.now())
-                .costumer(costumer)
+                .customer(customer)
                 .book(book).build();
 
         when(repository.save(savingLoan)).thenReturn(savedLoan);
@@ -58,7 +64,7 @@ public class LoanServiceTest {
 
         assertEquals(savedLoan.getId(), loan.getId());
         assertEquals(savedLoan.getBook().getId(), loan.getBook().getId());
-        assertEquals(savedLoan.getCostumer(), loan.getCostumer());
+        assertEquals(savedLoan.getCustomer(), loan.getCustomer());
         assertEquals(savedLoan.getLoanDate(), loan.getLoanDate());
     }
 
@@ -66,10 +72,10 @@ public class LoanServiceTest {
     @DisplayName("Deve lançar erro de negócio ao salvar um empréstimo com livro já emprestado")
     void loanedBookSaveTest() {
         Book book = Book.builder().id(1L).build();
-        String costumer = "Sena";
+        String customer = "Sena";
         Loan savingLoan = Loan.builder()
                 .book(book)
-                .costumer(costumer)
+                .customer(customer)
                 .loanDate(LocalDate.now())
                 .build();
         when(repository.existsByBookAndNotReturned(book)).thenReturn(true);
@@ -96,7 +102,7 @@ public class LoanServiceTest {
 
         assertTrue(result.isPresent());
         assertEquals(loan.getId(), result.get().getId());
-        assertEquals(loan.getCostumer(), result.get().getCostumer());
+        assertEquals(loan.getCustomer(), result.get().getCustomer());
         assertEquals(loan.getBook(), result.get().getBook());
         assertEquals(loan.getLoanDate(), result.get().getLoanDate());
 
@@ -117,21 +123,43 @@ public class LoanServiceTest {
         assertTrue(updated.getReturned());
     }
 
+    @Test
+    @DisplayName("Deve filtrar pelas propriedades")
+    void findLoanTest() {
+        Loan loan = createLoan();
+        LoanFilterDTO dto = LoanFilterDTO.builder().customer("Sena").isbn("123").build();
+        loan.setId(1L);
 
-    public Loan createLoan() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<Loan> list = Arrays.asList(loan);
+        Page<Loan> page = new PageImpl<Loan>(list, pageRequest, list.size());
+        when(repository.findByBookIsbnOrCustomer(anyString(),anyString(), any(PageRequest.class)))
+                .thenReturn(page);
+
+        Page<Loan> result = service.find(dto, pageRequest);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(list, result.getContent());
+        assertEquals(0, result.getPageable().getPageNumber());
+        assertEquals(10, result.getPageable().getPageSize());
+
+    }
+
+
+    public static Loan createLoan() {
 
         Book book = Book.builder().id(1L).build();
-        String costumer = "Sena";
+        String customer = "Sena";
         Loan savingLoan = Loan.builder()
                 .book(book)
-                .costumer(costumer)
+                .customer(customer)
                 .loanDate(LocalDate.now())
                 .build();
 
         return Loan.builder()
                 .id(savingLoan.getId())
                 .loanDate(LocalDate.now())
-                .costumer(costumer)
+                .customer(customer)
                 .book(book).build();
     }
 }
