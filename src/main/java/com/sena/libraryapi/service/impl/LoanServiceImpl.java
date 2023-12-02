@@ -6,6 +6,8 @@ import com.sena.libraryapi.model.repository.LoanRepository;
 import com.sena.libraryapi.service.LoanService;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoanServiceImpl implements LoanService {
 
@@ -20,6 +22,16 @@ public class LoanServiceImpl implements LoanService {
         if(repository.existsByBookAndNotReturned(loan.getBook())){
             throw new BusinessException("Book already loaned");
         }
+        return repository.save(loan);
+    }
+
+    @Override
+    public Optional<Loan> getById(Long id) {
+        return Optional.of(repository.getReferenceById(id));
+    }
+
+    @Override
+    public Loan update(Loan loan) {
         return repository.save(loan);
     }
 }
