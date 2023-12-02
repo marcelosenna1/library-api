@@ -1,9 +1,7 @@
 package com.sena.libraryapi.model.repository;
 
 import com.sena.libraryapi.model.entity.Book;
-import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.service.LoanService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -101,7 +99,7 @@ public class BookRepositoryTest {
         assertNull(deletedBook);
     }
 
-    private static Book createNewBookIsbn(String isbn) {
+    static Book createNewBookIsbn(String isbn) {
         return Book.builder().title("Code Sena").author("Marcelo Sena").isbn(isbn).build();
     }
 }

@@ -4,7 +4,9 @@ import com.sena.libraryapi.exception.BusinessException;
 import com.sena.libraryapi.model.entity.Loan;
 import com.sena.libraryapi.model.repository.LoanRepository;
 import com.sena.libraryapi.service.LoanService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository repository;
