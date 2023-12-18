@@ -1,19 +1,13 @@
 package com.sena.libraryapi;
 
-import com.sena.libraryapi.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.sena.libraryapi.*")
@@ -21,10 +15,8 @@ import java.util.List;
 public class LibraryApiApplication implements CommandLineRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibraryApiApplication.class);
-
 	private final Environment enviroment;
-	@Autowired
-	private EmailService emailService;
+
 
 	public LibraryApiApplication(Environment enviroment) {
 		this.enviroment = enviroment;
@@ -43,12 +35,5 @@ public class LibraryApiApplication implements CommandLineRunner {
 		LOGGER.info("Enviroment......: [ {} ]", enviroment);
 		LOGGER.info("---------------------------------------");
 	}
-	@Bean
-	public CommandLineRunner runner(){
-		return args -> {
-			List<String> emails = Arrays.asList("959d499cf4-0d96b8+1@inbox.mailtrap.io");
-			emailService.sendMails("Testando serviço de emails", emails);
-			LOGGER.info("Email enviado");
-		};
-	}
+
 }
