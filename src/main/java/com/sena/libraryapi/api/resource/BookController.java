@@ -6,6 +6,9 @@ import com.sena.libraryapi.model.entity.Book;
 import com.sena.libraryapi.model.entity.Loan;
 import com.sena.libraryapi.service.BookService;
 import com.sena.libraryapi.service.LoanService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -30,6 +33,7 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Create a book")
     public BookDTO create(@RequestBody @Valid BookDTO dto) {
         Book entity = modelMapper.map(dto, Book.class);
         entity = service.save(entity);
@@ -37,6 +41,7 @@ public class BookController {
     }
 
     @GetMapping("{id}")
+    @ApiOperation("Obtains a book details by id")
     public BookDTO get(@PathVariable Long id) {
         return service
                 .getById(id)
@@ -46,6 +51,7 @@ public class BookController {
     }
 
     @GetMapping
+    @ApiOperation("Find books")
     public Page<BookDTO> find(BookDTO dto, Pageable pageRequest) {
 
         Book filter = modelMapper.map(dto, Book.class);
@@ -58,6 +64,10 @@ public class BookController {
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiOperation("Delete a book")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Book succesfully deleted")
+    })
     public void delete(@PathVariable Long id) {
         Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(book);
@@ -66,6 +76,7 @@ public class BookController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Update a book")
     public BookDTO update(@PathVariable Long id, BookDTO dto) {
         return service.getById(id).map(book -> {
             book.setAuthor(dto.getAuthor());
