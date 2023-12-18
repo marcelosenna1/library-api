@@ -7,9 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.sena.libraryapi.*")
+@EnableScheduling
 public class LibraryApiApplication implements CommandLineRunner {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LibraryApiApplication.class);
