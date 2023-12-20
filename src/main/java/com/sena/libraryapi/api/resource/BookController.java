@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/books")
 @AllArgsConstructor
+@Slf4j
 public class BookController {
 
     private final BookService service;
@@ -35,6 +37,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create a book")
     public BookDTO create(@RequestBody @Valid BookDTO dto) {
+        log.info("Criando Book {}", dto);
         Book entity = modelMapper.map(dto, Book.class);
         entity = service.save(entity);
         return modelMapper.map(entity, BookDTO.class);
@@ -43,6 +46,7 @@ public class BookController {
     @GetMapping("{id}")
     @ApiOperation("Obtains a book details by id")
     public BookDTO get(@PathVariable Long id) {
+        log.info("Obtains a book details by id = {}", id);
         return service
                 .getById(id)
                 .map(book -> modelMapper.map(book, BookDTO.class))
@@ -69,6 +73,7 @@ public class BookController {
             @ApiResponse(code = 204, message = "Book succesfully deleted")
     })
     public void delete(@PathVariable Long id) {
+        log.info("Delete book id = {}", id);
         Book book = service.getById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(book);
 
@@ -78,6 +83,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation("Update a book")
     public BookDTO update(@PathVariable Long id, BookDTO dto) {
+        log.info("Update book id = {}", id);
         return service.getById(id).map(book -> {
             book.setAuthor(dto.getAuthor());
             book.setTitle(dto.getTitle());
