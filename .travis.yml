@@ -2,6 +2,8 @@ language: java
 jdk:
   - oraclejdk8
 dist: trusty
+install: true
 script: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-before_install:
+before_script:
   - chmod +x mvnw
+  - ./mvnw --version
